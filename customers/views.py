@@ -8,13 +8,17 @@ from rest_framework import status
 
 @api_view(["GET", "POST"])
 def customers(request):
-    # invoke serializer and return to client
+    """
+    List all customers or create a new customer.
+
+    GET: Retrieve a list of all customers.
+    POST: Create a new customer.
+    """
     if request.method == "GET":
         data = Customer.objects.all()
         serializer = CustomerSerializer(data, many=True)
-        return Response(
-            {"customers": serializer.data}
-        )  # This is going to be the json compatible version that we are going to pass as response
+        return Response({"customers": serializer.data})
+
     elif request.method == "POST":
         serializer = CustomerSerializer(data=request.data)
         if serializer.is_valid():
@@ -25,23 +29,28 @@ def customers(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# Function to get a single customer
-@api_view(["GET", "POST", "DELETE"])  # which methods we can use
+@api_view(["GET", "POST", "DELETE"])
 def customer(request, id):
+    """
+    Retrieve, update or delete a customer.
+
+    GET: Retrieve a customer by id.
+    POST: Update a customer by id.
+    DELETE: Delete a customer by id.
+    """
     try:
-        data = Customer.objects.get(pk=id)  # searching with id
+        data = Customer.objects.get(pk=id)
     except Customer.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == "GET":
         serializer = CustomerSerializer(data)
-        return Response(
-            {"customer": serializer.data}
-        )  # This is going to be the json compatible version that we are going to pass as response
+        return Response({"customer": serializer.data})
 
     elif request.method == "DELETE":
         data.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
     elif request.method == "POST":
         serializer = CustomerSerializer(data, data=request.data)
         if serializer.is_valid():
