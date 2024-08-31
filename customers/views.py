@@ -1,12 +1,14 @@
 from customers.models import Customer
 from django.http import JsonResponse, Http404
 from customers.serializers import CustomerSerializer
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 
 
 @api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
 def customers(request):
     """
     List all customers or create a new customer.
@@ -30,6 +32,7 @@ def customers(request):
 
 
 @api_view(["GET", "POST", "DELETE"])
+@permission_classes([IsAuthenticated])
 def customer(request, id):
     """
     Retrieve, update or delete a customer.
